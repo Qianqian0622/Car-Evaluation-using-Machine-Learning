@@ -1,0 +1,103 @@
+---
+title: "479Project"
+author: "Shirley Zhang(Xueqian Zhang)"
+date: "11/30/2018"
+output: html_document
+---
+
+```{r}
+car_eva <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/car/car.data", header=F, stringsAsFactors=F)  # import string variables as characters.
+colnames(car_eva) <- c("buying", "maint", "doors", "persons", "lug_boot", "safety", "class")
+head(car_eva)
+car_eva$buying[car_eva$buying=="vhigh"]=3
+car_eva$buying[car_eva$buying=="high"]=2
+car_eva$buying[car_eva$buying=="med"]=1
+car_eva$buying[car_eva$buying=="low"]=0
+car_eva$maint[car_eva$maint=="vhigh"]=3
+car_eva$maint[car_eva$maint=="high"]=2
+car_eva$maint[car_eva$maint=="med"]=1
+car_eva$maint[car_eva$maint=="low"]=0
+car_eva$doors[car_eva$doors=="5more"]=5
+car_eva$persons[car_eva$persons=="more"]=6
+car_eva$lug_boot[car_eva$lug_boot=="big"]=2
+car_eva$lug_boot[car_eva$lug_boot=="med"]=1
+car_eva$lug_boot[car_eva$lug_boot=="small"]=0
+car_eva$safety[car_eva$safety=="high"]=2
+car_eva$safety[car_eva$safety=="med"]=1
+car_eva$safety[car_eva$safety=="low"]=0
+X=car_eva[,1:6]
+X$buying=as.numeric(X$buying)
+X$maint=as.numeric(X$maint)
+X$doors=as.numeric(X$doors)
+X$persons=as.numeric(X$persons)
+X$lug_boot=as.numeric(X$lug_boot)
+X$safety=as.numeric(X$safety)
+## Principal Components
+E = eigen(cov(X))$vectors
+lambda = eigen(cov(X))$values
+round(cumsum(lambda)/sum(lambda)*100,1)
+X.princomp1 = princomp(cor = FALSE,covmat = cov(X))
+screeplot(X.princomp1,type="lines",pch=19,
+          main="PCA screeplot")
+abline(h=1,lty="dashed",col="red")
+pdf("PCA screeplot.pdf")
+screeplot(X.princomp1,type="lines",pch=19,main="PCA screeplot")
+abline(h=1,lty="dashed",col="red")
+dev.off()
+png("screeplot.png")
+screeplot(X.princomp1,type="lines",pch=19,main="PCA screeplot")
+abline(h=1,lty="dashed",col="red")
+dev.off()
+```
+
+```{r knn}
+setwd("~/Desktop/479 Project/pictures/")
+accuracy=c(88.4892, 89.2086, 92.8058, 90.6475, 92.0863, 89.9281, 94.2446,
+  93.5252,90.6475, 89.2086, 90.6475, 89.2086, 89.2086, 90.6475,
+  93.5252, 89.9281)
+b_knn_acc=c(94.2446, 87.7698, 93.5252, 89.2086, 94.2446, 90.6475, 93.5252,
+            92.0863, 92.8058, 92.0863, 92.0863, 91.3669, 92.0863, 92.0863,
+            91.3669, 91.3669)
+index=seq(1,16,by=1)
+data=data.frame(index,accuracy,b_knn_acc)
+ggplot(data, aes(x=index, y=accuracy)) + geom_point(col="black")+geom_line(col="red")+
+ggsave("acc1.png", width=4.5, height=1.5)
+
+ggplot(data, aes(x=index)) + 
+  geom_point(aes(y=accuracy)) + 
+  geom_line(aes(y=accuracy,  color="blue")) +
+  geom_point(aes(y=b_knn_acc)) + 
+  geom_line(aes(y=b_knn_acc, color="red"))
+ggsave("acc2.png", width=4.5, height=1.5)
+```
+
+
+```{r decision tree(gini)}
+accuracy=c(69.7842, 80.5755, 82.0144, 85.6115, 88.4892, 92.8058, 92.0863,
+       96.4029, 95.6835, 97.8417, 98.5612, 98.5612)
+index=seq(1,12,by=1)
+data=data.frame(index,accuracy)
+ggplot(data, aes(x=index, y=accuracy)) + geom_point(col="black")+geom_line(col="red")+
+ggsave("acc3.png", width=4.5, height=1.5)
+
+
+```
+
+```{r decision tree(entropy)}
+accuracy=c(69.7842,80.5755,82.0144 ,84.8921 ,86.3309 ,91.3669 ,92.8058, 96.4029,95.6835,97.8417, 97.8417 ,97.8417)
+index=seq(1,12,by=1)
+data=data.frame(index,accuracy)
+ggplot(data, aes(x=index, y=accuracy)) + geom_point(col="black")+geom_line(col="red")+
+ggsave("acc4.png", width=4.5, height=1.5)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
